@@ -1,9 +1,91 @@
 <html>
   <head>
     <title>Todo Application</title>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css">
   </head>
-  <body>
+  <body ng-app="todolist" ng-controller="todoController">
+
+  	<script>
+
+  		var app = angular.module("todolist", []);
+
+  		app.controller("todoController", function($scope, $filter){
+
+        $scope.tasks = [{ title: "Add tasks", desc: "Add some tasks with the form!", done: false }];
+
+        $scope.master = {};
+        var orderBy = $filter('orderBy');
+
+        $scope.addTask = function(task) {
+          console.log(task);
+          if (task != undefined && task.title != undefined && task.desc != undefined && task.title != "" && task.desc != "") {
+            $scope.task.done = false;
+            $scope.tasks.push(angular.copy(task));
+            $scope.task.title = undefined;
+            $scope.task.desc = undefined;
+            $scope.task.date = null;
+          }
+          else {
+            console.log("You need a title and desc!");
+          } 
+        }
+
+        $scope.clearFinished = function() {
+           $scope.tasks = $scope.tasks.filter(function(task) {
+            return !task.done;
+          })
+        };
+
+        $scope.orderByDate = function() {
+          $scope.tasks = orderBy($scope.tasks, 'date');
+        }
+
+        $scope.orderByTitle = function() {
+          $scope.tasks = orderBy($scope.tasks, 'title');
+        }
+
+  		});
+
+  	</script>
+
+  	<div class="container">
+
+  		<div class="col-xs-8">
+	  		<table class="table">
+	  			<tr>
+            <th>Done</th>
+	  				<th ><button class="btn btn-secondary" ng-click="orderByTitle()"><b>Title</b></button></th>
+	  				<th>Description</th>
+	  				<th><button class="btn btn-secondary" ng-click="orderByDate()"><b>Due Date</b></button></th>
+				</tr>
+        <tr ng-repeat="task in tasks">
+          <td><input type="checkbox" ng-model="task.done"/>
+          <td>{{task.title}}</td>
+          <td>{{task.desc}}</td>
+          <td>{{task.date | date:'MM/dd/yyyy'}}</td>
+        </tr>
+				
+	  		</table>
+  		</div>
+
+  		<div class="card col-xs-4">
+  			<div class="card-header">Create a new todo item</div>
+  			<div class="card-block">
+  				<form>
+  					<fieldset class="form-group">
+  						<input type="text" class="form-control" id="itemTitle" placeholder="Item Title" ng-model="task.title"/>
+  						<input type="text" class="form-control" id="itemDescription" placeholder="Description of the task" ng-model="task.desc"/>
+  						<input type="date" class="form-control" id="itemDate" ng-model="task.date"/> <br/>
+  						<button type="submit" class="btn btn-primary" ng-click="addTask(task)">Add Item</button>
+  					</fieldset>
+  				</form>
+        <button class="btn btn-primary" ng-click="clearFinished()">Delete completed tasks</button>
+
+  			</div>
+  		</div>
+
+  	</div>
+
   </body>
 </html>
